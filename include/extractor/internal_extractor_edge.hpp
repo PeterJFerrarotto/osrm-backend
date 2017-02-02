@@ -21,20 +21,16 @@ namespace extractor
 namespace detail
 {
 // these are used for duration based mode of transportations like ferries
-OSRM_STRONG_TYPEDEF(double, ValueByEdge)
-OSRM_STRONG_TYPEDEF(double, ValueByMeter)
-using ByEdgeOrByMeterValue = mapbox::util::variant<detail::ValueByEdge, detail::ValueByMeter>;
+// OSRM_STRONG_TYPEDEF(double, ValueByEdge)
+// OSRM_STRONG_TYPEDEF(double, ValueByMeter)
+using ByEdgeOrByMeterValue =
+    float; // mapbox::util::variant<detail::ValueByEdge, detail::ValueByMeter>;
 
 struct ToValueByEdge
 {
     ToValueByEdge(double distance_) : distance(distance_) {}
 
-    ValueByEdge operator()(const ValueByMeter by_meter) const
-    {
-        return ValueByEdge{distance / static_cast<double>(by_meter)};
-    }
-
-    ValueByEdge operator()(const ValueByEdge by_edge) const { return by_edge; }
+    double operator()(const float value) const { return value >= 0 ? value : -distance / value; }
 
     double distance;
 };
@@ -60,7 +56,7 @@ struct InternalExtractorEdge
                  false,
                  guidance::TurnLaneType::empty,
                  guidance::RoadClassification()),
-          weight_data(detail::ValueByMeter{0.0}), duration_data(detail::ValueByMeter{0.0})
+          weight_data(0.f), duration_data(0.f)
     {
     }
 
@@ -113,8 +109,8 @@ struct InternalExtractorEdge
         return InternalExtractorEdge(MIN_OSM_NODEID,
                                      MIN_OSM_NODEID,
                                      SPECIAL_NODEID,
-                                     detail::ValueByMeter{0.0},
-                                     detail::ValueByMeter{0.0},
+                                     0.f,
+                                     0.f,
                                      false, // forward
                                      false, // backward
                                      false, // roundabout
@@ -131,8 +127,8 @@ struct InternalExtractorEdge
         return InternalExtractorEdge(MAX_OSM_NODEID,
                                      MAX_OSM_NODEID,
                                      SPECIAL_NODEID,
-                                     detail::ValueByMeter{0.0},
-                                     detail::ValueByMeter{0.0},
+                                     0.f,
+                                     0.f,
                                      false, // forward
                                      false, // backward
                                      false, // roundabout

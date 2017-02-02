@@ -427,10 +427,8 @@ void ExtractionContainers::PrepareEdges(ScriptingEnvironment &scripting_environm
             const double distance = util::coordinate_calculation::greatCircleDistance(
                 edge_iterator->source_coordinate, target_coord);
 
-            double weight = static_cast<double>(mapbox::util::apply_visitor(
-                detail::ToValueByEdge(distance), edge_iterator->weight_data));
-            double duration = static_cast<double>(mapbox::util::apply_visitor(
-                detail::ToValueByEdge(distance), edge_iterator->duration_data));
+            double weight = detail::ToValueByEdge(distance)(edge_iterator->weight_data);
+            double duration = detail::ToValueByEdge(distance)(edge_iterator->duration_data);
 
             ExtractionSegment extracted_segment(
                 edge_iterator->source_coordinate, target_coord, distance, weight, duration);

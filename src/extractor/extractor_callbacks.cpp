@@ -119,8 +119,8 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
     InternalExtractorEdge::WeightData forward_weight_data;
     InternalExtractorEdge::WeightData backward_weight_data;
 
-    const auto toValueByEdgeOrByMeter =
-        [&nodes](const double by_way, const double by_meter) -> detail::ByEdgeOrByMeterValue {
+    const auto toValueByEdgeOrByMeter = [&nodes](const double by_way,
+                                                 const double by_meter) -> float {
         if (by_way > 0)
         {
             // FIXME We divide by the number of edges here, but should rather consider
@@ -128,11 +128,11 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
             // of the whole way here (we can't: no node coordinates) or push that back
             // to the container and keep a reference to the way.
             const unsigned num_edges = (nodes.size() - 1);
-            return detail::ValueByEdge{by_way / num_edges};
+            return by_way / num_edges;
         }
         else
         {
-            return detail::ValueByMeter{by_meter};
+            return -by_meter;
         }
     };
 
